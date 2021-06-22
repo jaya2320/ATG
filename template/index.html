@@ -1,0 +1,153 @@
+<html>
+    <head>
+        <title>Input</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <style>
+            .container{
+                margin-left:480px;
+                margin-top:100px;
+                width:380px;
+                padding:50px;
+                background-color:rgb(236, 165, 33) ;
+                border-radius:20px;
+            }
+            .container select{
+                margin-left:60px;
+                margin-top:20px;
+                font-size: 20px;
+            }
+            .container .p1{
+                color:#fff;
+                font-weight: 500;
+            } 
+            .container .link{
+                text-decoration :None;
+                color:rgb(87, 12, 9);
+                font-weight: 800;
+            }
+            .container input{
+               margin-left:-15px;
+                margin-top:20px;
+                font-size: 20px;
+            }
+            .container button{
+                margin-left:100px;
+                margin-top:20px;
+                font-size: 20px;
+                border-radius:20px;
+                padding:10px;
+            }
+        
+           
+            .menu-container ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: rgb(236, 165, 33);
+              }
+              
+              .menu-container li {
+                float: left;
+              }
+              
+              .menu-container li a {
+                display: inline-block;
+                color: white;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+              }
+              
+              .menu-container li a:hover {
+                background-color: #333;
+              }
+              
+              .menu-container .active {
+                background-color: red;
+              }
+              .search-container{
+                  margin-left:980px;
+                  margin-top:20px;
+              }
+              .search-container input{
+                  width:45%;
+              }
+        </style>
+    </head>
+    <body>
+
+
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags %}
+        <script>alert("{{ message }}")</script> {% endif %}
+    
+        {% endfor %}
+    
+        {% endif %}
+        
+        <input hidden id="room-name-input" type="text" size="100" value="public-chat-room"><br>
+        <!---<input id="room-name-submit" type="button" value="Enter">-->
+    
+        <script>
+            document.querySelector('#room-name-input').focus();
+            document.querySelector('#room-name-input').onkeyup = function(e) {
+                if (e.keyCode === 13) {  // enter, return
+                    document.querySelector('#room-name-submit').click();
+                }
+            };
+    
+            document.querySelector('#room-name-submit').onclick = function(e) {
+                var roomName = document.querySelector('#room-name-input').value;
+                window.location.pathname = '/' + roomName + '/';
+            };
+        </script>
+        <div class="menu-container">
+            <ul>
+                <li><a href="index" class="active">Home</a></li>
+                <li><a href="chatroom" id="room-name-submit">Chat Room</a></li>
+                <li><a href="logout">Log-Out</a></li>
+            </ul>
+        </div>
+        <div class="search-container">
+        <form class="example" action="searching" method="GET">
+            {% csrf_token %}
+            <input type="text" placeholder="Search.." name="search">
+            <button type="submit"><i class="fa fa-search"></i></button>
+          </form>
+        </div>
+        <div class="container">
+        <table>
+        
+            <tr>
+               <h1>USER DETAILS</h1>
+    </tr>
+    <tr>
+        <td>
+            <label>UserName :</label>
+        </td>
+       <td >
+        <input type="text" name="username" disabled placeholder="{{details.username}}">
+       </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Email :</label>
+        </td>
+       <td >
+        <input type="email" name="email" disabled placeholder="{{details.email}}">
+       </td>
+       </tr>
+       <tr>
+        <td>
+         <button value="submit"><a href="{% url 'edit_user' details.pk %}">Edit</a> </button>
+        </td>
+     </tr>
+
+</table>
+
+</div>
+    </body>
+</html>

@@ -1,0 +1,91 @@
+<html>
+    <head>
+        <title>Input</title>
+        <style>
+            .container{
+                margin-left:480px;
+                margin-top:100px;
+                width:380px;
+                padding:50px;
+                background-color:rgb(236, 165, 33) ;
+                border-radius:20px;
+            }
+            .container select{
+                margin-left:60px;
+                margin-top:20px;
+                font-size: 20px;
+            }
+            .container .p1{
+                color:#fff;
+                font-weight: 500;
+            } 
+            .container .link{
+                text-decoration :None;
+                color:rgb(87, 12, 9);
+                font-weight: 800;
+            }
+            .container input{
+               margin-left:-80px;
+                margin-top:20px;
+                font-size: 20px;
+            }
+            .container button{
+                margin-left:100px;
+                margin-top:20px;
+                font-size: 20px;
+                border-radius:20px;
+            }
+        </style>
+    </head>
+    <body>
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags %}
+        <script>alert("{{ message }}")</script> {% endif %}
+    
+        {% endfor %}
+    
+        {% endif %}
+        <div class="container">
+        <table>
+        <form action="/update_user/{{object.id}}" method="POST" >
+            {% csrf_token %}
+            <tr>
+               <h1>Edit</h1>
+    </tr>
+    <tr>
+        <td>
+            <label>UserName :</label>
+        </td>
+       <td >
+        <input type="text" name="username" value="{{object.username}}" >
+       </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Email :</label>
+        </td>
+       <td >
+        <input type="email" name="email" value="{{object.email}}">
+       </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Password :</label>
+        </td>
+       <td>
+        <input type="password" name="password" value="{{object.password}}">
+       </td>
+    </tr>
+
+    <tr>
+       <td>
+        <button value="submit">Submit</button>
+       </td>
+    </tr>
+    </form>
+</table>
+
+</div>
+    </body>
+</html>

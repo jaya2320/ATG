@@ -16,7 +16,7 @@
                 font-size: 20px;
             }
             .container input{
-               margin-left:-80px;
+               margin-left:-250px;
                 margin-top:20px;
                 font-size: 20px;
             }
@@ -59,7 +59,7 @@
             <label>UserName :</label>
         </td>
        <td >
-        <input type="text" name="username" >
+        <input type="text" name="username" required>
        </td>
     </tr>
     <tr>
@@ -67,12 +67,23 @@
             <label>Password :</label>
         </td>
        <td>
-        <input type="password" name="password" >
+        <input type="password" name="password" required>
        </td>
     </tr>
+
+    <tr>
+        <td>CAPTCHA</td>
+        <td>
+            <canvas id="myCanvas" width="265" height="80" style="margin-left:-250px; background-color: beige;"></canvas>
+        </td>
+    </tr>
+    <tr>
+        <td><input type="text" required placeholder ="Enter the Captcha" name="captcha" style="margin-left:100px;"></td>
+    </tr>
+
     <tr>
        <td>
-        <button value="submit">Submit</button>
+        <button value="submit" >Submit</button>
        </td>
     </tr>
     </form>
@@ -80,4 +91,15 @@
 <p class="p1">New User ?<a class="link" href="signup"> SIGN-UP</a></p>
 </div>
     </body>
+    
+        <script>
+            var canvas = document.getElementById("myCanvas");
+            var ctx=canvas.getContext("2d");
+            ctx.font="30px Comic Sans MS";
+            ctx.fillStyle = "red";
+            ctx.textAlign = "center";
+            ctx.fillText("{{cap1}}+{{cap2}}=", canvas.width/2, canvas.height/2);
+            
+            </script>
+  
 </html>

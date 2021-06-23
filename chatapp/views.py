@@ -4,21 +4,35 @@ from django.contrib.auth.models import User, auth
 from chatapp.forms import Userform
 from django.contrib import messages
 from .models import Message
-
+import random
+global s_num1,s_num2,s_num3
 # Create your views here.
 def login(request):
-    return render(request,'login.html')
+    num1=random.randrange(1,101)
+    num2=random.randrange(1,101)
+    num3=num1+num2
+    global s_num1,s_num2,s_num3
+    s_num1=str(num1)
+    s_num2=str(num2)
+    s_num3=str(num3)
+
+    return render(request,'login.html',{'cap1':s_num1,'cap2':s_num2})
 
 def enter(request):
     username=request.POST['username']
     passw=request.POST['password']
+    captcha=request.POST.get('captcha')
 
-    user =auth.authenticate(username=username,password=passw)
-    if user is not None:
-        auth.login(request,user)
-        return redirect('index')
+    if s_num3==str(captcha):
+        user =auth.authenticate(username=username,password=passw)
+        if user is not None:
+            auth.login(request,user)
+            return redirect('index')
+        else:
+            messages.info(request,"Sorry! Account does not Exist.")
+            return redirect('/')
     else:
-        messages.info(request,"Sorry! Account does not Exist.")
+        messages.info(request,"OOPS! Wrong Captcha")
         return redirect('/')
 
 def signup(request):
@@ -47,27 +61,28 @@ def register(request):
                 user.save()
                 
                 messages.info(request,"Congratulations your account is created successfully. !")
-                return render (request,"login.html")
+                return redirect("/")
 
         else:
             messages.info(request,"OOPS! Password is not matching.")
     return redirect('login')
-
+@login_required
 def index(request):
     details=request.user
   
     return render (request,"index.html",{'details':details})
-
+@login_required
 def index1(request):
-    return redirect('/')
+    return redirect('index')
 
+@login_required
 def logout(request):
     auth.logout(request)
     return redirect('/')
-
+@login_required
 def logout1(request):
     return redirect('logout')
-    
+@login_required
 def searching(request):
     if request.method=='GET':
         user=request.GET['search']
@@ -79,12 +94,12 @@ def searching(request):
         else:
             messages.info(request,"Sorry !! No such User Exist")
             return redirect('index')
-
+@login_required
 def edit_user(request,id):
     
     object=request.user
     return render(request,'edit_user.html',{'object':object})
-
+@login_required
 def update_user(request,id):
     object=User.objects.get(id=id)
     form=Userform(request.POST,instance=object)
@@ -96,10 +111,10 @@ def update_user(request,id):
         return redirect('index')
 
 
-
+@login_required
 def room(request,room_name):
     
-    messages=Message.objects.all()[0:25]
+    messages=Message.objects.all()[0:50]
     return render(request,'chatroom.html',{
       
         'room_name':room_name,

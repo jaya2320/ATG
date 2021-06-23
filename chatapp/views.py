@@ -66,23 +66,23 @@ def register(request):
         else:
             messages.info(request,"OOPS! Password is not matching.")
     return redirect('login')
-@login_required
+@login_required(login_url="login")
 def index(request):
     details=request.user
   
     return render (request,"index.html",{'details':details})
-@login_required
+@login_required(login_url="login")
 def index1(request):
     return redirect('index')
 
-@login_required
+@login_required(login_url="login")
 def logout(request):
     auth.logout(request)
     return redirect('/')
-@login_required
+@login_required(login_url="login")
 def logout1(request):
     return redirect('logout')
-@login_required
+@login_required(login_url="login")
 def searching(request):
     if request.method=='GET':
         user=request.GET['search']
@@ -100,12 +100,12 @@ def searching(request):
             else:
                 messages.info(request,"Sorry !! No such User Exist")
                 return redirect('index')
-@login_required
+@login_required(login_url="login")
 def edit_user(request,id):
     
     object=request.user
     return render(request,'edit_user.html',{'object':object})
-@login_required
+@login_required(login_url="login")
 def update_user(request,id):
     object=User.objects.get(id=id)
     form=Userform(request.POST,instance=object)
@@ -117,7 +117,7 @@ def update_user(request,id):
         return redirect('index')
 
 
-@login_required
+@login_required(login_url="login")
 def room(request,room_name):
     
     messages=Message.objects.all()[0:50]

@@ -87,13 +87,19 @@ def searching(request):
     if request.method=='GET':
         user=request.GET['search']
         details=User.objects.filter(username__icontains=user)
-     
+
         if details:
 
             return render (request,"asearch.html",{'details':details})
         else:
-            messages.info(request,"Sorry !! No such User Exist")
-            return redirect('index')
+            details1=User.objects.filter(email__exact=user)
+            
+            if details1:
+                
+                return render (request,"asearch.html",{'details':details1})
+            else:
+                messages.info(request,"Sorry !! No such User Exist")
+                return redirect('index')
 @login_required
 def edit_user(request,id):
     

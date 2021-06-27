@@ -48,17 +48,25 @@
         {% endif %}
         <div class="container">
         <table>
-        <form action="/update_user/{{object.id}}" method="POST" >
+        <form action="/update_user/{{object.id}}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <tr>
                <h1>Edit</h1>
     </tr>
     <tr>
         <td>
+            <label>Profile Image :</label>
+        </td>
+       <td >
+        <input type="file" name="profile_image" value="{{object.profile_image.url}}" >
+       </td>
+    </tr>
+    <tr>
+        <td>
             <label>UserName :</label>
         </td>
        <td >
-        <input type="text" name="username" value="{{object.username}}" >
+        <input type="text" name="username" value="{{object.user.username}}" >
        </td>
     </tr>
     <tr>
@@ -66,7 +74,7 @@
             <label>Email :</label>
         </td>
        <td >
-        <input type="email" name="email" value="{{object.email}}">
+        <input type="email" name="email" value="{{object.user.email}}">
        </td>
     </tr>
     <tr>
@@ -74,7 +82,7 @@
             <label>Password :</label>
         </td>
        <td>
-        <input type="password" name="password" value="{{object.password}}">
+        <input type="password" name="password" value="{{object.user.password}}">
        </td>
     </tr>
 

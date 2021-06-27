@@ -1,29 +1,49 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, auth
-from chatapp.forms import Userform
+from chatapp.forms import Profileform, Userform
 from django.contrib import messages
-from .models import Message
+from .models import Messagepublic,Message, Profile,Thread
 import random
-global s_num1,s_num2,s_num3
+from django.views import View
+from django.contrib.auth import get_user_model
+from django.shortcuts import Http404
+from django.db.models import Count
+import os
+global s_num1,s_num2,s_num3,arr,arr1
+arr=[[0,0,0]]
 # Create your views here.
-def login(request):
-    num1=random.randrange(1,101)
-    num2=random.randrange(1,101)
+def getcaptcha():
+    global arr,arr1
+    arr1=arr.pop(0)
+    num1=random.randrange(1,10)
+    num2=random.randrange(1,10)
     num3=num1+num2
     global s_num1,s_num2,s_num3
-    s_num1=str(num1)
-    s_num2=str(num2)
-    s_num3=str(num3)
-
+    s_num1=num1
+    s_num2=num2
+    s_num3=num3
+   
+    
+    return s_num1,s_num2,s_num3,arr1
+def login(request):
+    
+    x,y,z,arr1=getcaptcha()
+    arr.append([x,y,z])
+    print(x,y,z,arr,arr1,'first--------------------------------------------------')
     return render(request,'login.html',{'cap1':s_num1,'cap2':s_num2})
+
+def signup(request):
+    return render(request,'signup.html')
 
 def enter(request):
     username=request.POST['username']
     passw=request.POST['password']
     captcha=request.POST.get('captcha')
-
-    if s_num3==str(captcha):
+    global arr1
+    print(s_num1,s_num2,s_num3, arr1 ,'second--------------------------------------------------')
+    if int(captcha)==arr1[2]:
+        arr=[]
         user =auth.authenticate(username=username,password=passw)
         if user is not None:
             auth.login(request,user)
@@ -32,11 +52,9 @@ def enter(request):
             messages.info(request,"Sorry! Account does not Exist.")
             return redirect('/')
     else:
+        arr=[]
         messages.info(request,"OOPS! Wrong Captcha")
         return redirect('/')
-
-def signup(request):
-    return render(request,'signup.html')
 
 
 def register(request):
@@ -58,8 +76,10 @@ def register(request):
                 
             else:
                 user=User.objects.create_user(email=email,password=pass1,username=username)
-                user.save()
                 
+                user.save()
+                profile=Profile(user=user,status='False')
+                profile.save()
                 messages.info(request,"Congratulations your account is created successfully. !")
                 return redirect("/")
 
@@ -69,6 +89,7 @@ def register(request):
 @login_required(login_url="login")
 def index(request):
     details=request.user
+    
   
     return render (request,"index.html",{'details':details})
 @login_required(login_url="login")
@@ -102,15 +123,26 @@ def searching(request):
                 return redirect('index')
 @login_required(login_url="login")
 def edit_user(request,id):
-    
-    object=request.user
+    user1=request.user
+    object=Profile.objects.get(user=user1)
     return render(request,'edit_user.html',{'object':object})
+
+
 @login_required(login_url="login")
 def update_user(request,id):
-    object=User.objects.get(id=id)
-    form=Userform(request.POST,instance=object)
-    if form.is_valid():
-        form.save()
+    user1=request.user
+    object=Profile.objects.get(user=user1)
+    
+    if request.method=='POST':
+        form=Userform(request.POST,instance=user1)
+        form1=Profileform(request.POST,request.FILES,instance=object)
+        if form.is_valid():
+            if form1.is_valid():
+                form1.save()
+            else:
+                messages.info(request,"Sorry !! Data didn't validate for form1")
+            form.save()
+
         return redirect('index')
     else:
         messages.info(request,"Sorry !! Data didn't validate")
@@ -120,11 +152,41 @@ def update_user(request,id):
 @login_required(login_url="login")
 def room(request,room_name):
     
-    messages=Message.objects.all()[0:50]
+    messages=reversed(Messagepublic.objects.all().order_by('-date')[0:2])
     return render(request,'chatroom.html',{
       
         'room_name':room_name,
         'messages':messages
     })
 
+@login_required(login_url="login")
+def deletemessage(request,pk):
+        
+        Messagepublic.objects.filter(id=pk).delete()
+        return redirect(room,room_name="chatroom")
 
+
+
+@login_required(login_url="login")
+def room1(request,username):
+    
+    user2=User.objects.get(username=username)
+    user1=request.user
+    threads=Thread.objects.get_or_create_personal_thread(user1, user2)
+    count=Count('users')
+    
+    profile2=Profile.objects.get(user=user2)
+    #print(threads,threads.id,count,profile2.status,'---------------------------------------------------------------------------------------------------------')
+    if profile2.status == False:
+
+        #room_name='personal_thread_'+str(obj.id)
+        messages=reversed(Message.objects.filter(thread=threads.id).order_by('-date')[0:2])
+        return render(request,'personal_chatroom.html',{'seconduser':username,'messages':messages,'status':'Offline'})
+    else:
+        messages=reversed(Message.objects.filter(thread=threads.id).order_by('-date')[0:2])
+        return render(request,'personal_chatroom.html',{'seconduser':username,'messages':messages,'status':'Online'})
+@login_required(login_url="login")
+def deletepersonalmessage(request,username,pk):
+        
+        Message.objects.filter(id=pk).delete()
+        return redirect(room1,username=username)

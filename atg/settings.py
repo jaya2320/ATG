@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'atg.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME':'atg1',
+        'NAME':'atg3',
         'USER': 'postgres',
         'PASSWORD':"2320",
         'HOST': 'localhost'
@@ -135,3 +135,5 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
+MEDIA_URL='/media/'
+MEDIA_ROOT=os.path.join(BASE_DIR,'media')

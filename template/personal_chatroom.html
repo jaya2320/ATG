@@ -51,6 +51,7 @@
           .container-darker {
             border-color: #ccc;
             background-color: #ddd;
+            width:70%;
           }
           
           .container-darker::after {
@@ -86,10 +87,11 @@
 </head>
 
 <body>
+ 
     <div class="menu-container">
         <ul>
             <li><a href="index1" class="active">Home</a></li>
-        
+            
             <li><a href="logout1">Log-Out</a></li>
         </ul>
     </div>
@@ -98,30 +100,36 @@
         <div class="row d-flex justify-content-center">
             <div class="col-6">
                 <form>
+                  <h3>User: {{request.user}} </h3>
+                  
                     <div class="form-group">
-                        <label for="exampleFormControlTextarea1" class="h4 pt-5">Chatroom</label>
-                       <div class="box">
+                      
+                        <label for="exampleFormControlTextarea1" class="h4 pt-5"> Chatting With :{{seconduser}} [STATUS : {{status}}]</label>
+                        
+                       
+                        <div class="box">
                            <div class="form-control" id="chat-text-area" rows="100" style="height:350px; width:800px; margin-left:-100px;">
                             {% for i in messages %}
-                         
-                            {% if i.user == request.user.username %}
+                              {% if i.sender == request.user %}
 
-                            
-                          <div class="container-darker" style="margin-left:230px;">
-                              <b>{{i.user}}</b><p>{{i.content}}</p>
-                              <span class="time-left">{{i.date}}</span>
-                              <span class="time-right"><button style="background-color: rgb(2, 47, 88); border-radius:5px;"><a href="{% url 'deletemessage' i.pk %}" style="color:#fff; text-decoration: None;">Delete </a></button></span>
-                            </div> 
-                          <br>
-                            {% else %}
-                            <div class="container-darker">
-                              <b>{{i.user}}</b><p>{{i.content}}</p>
-                              <span class="time-left">{{i.date}}</span>
                               
-                            </div> 
-                          <br>
-                            {% endif %}
-                          {% endfor %}
+                            <div class="container-darker" style="margin-left:230px;">
+                                <b>{{i.sender}}</b><p>{{i.content}}</p>
+                                <span class="time-left">{{i.date}}</span>
+                                <span class="time-right"><button style="background-color: rgb(2, 47, 88); border-radius:5px;"><a href="{% url 'deletepersonalmessage' seconduser i.pk %}" style="color:#fff; text-decoration: None;">Delete </a></button></span>
+                              </div> 
+                            <br>
+                              {% else %}
+                              <div class="container-darker">
+                                <b>{{i.sender}}</b><p>{{i.content}}</p>
+                                <span class="time-left">{{i.date}}</span>
+                                
+                              </div> 
+                            <br>
+                              {% endif %}
+                            {% endfor %}
+                           
+                        </div>
                         </div> <br>
                         </div>
                     <div class="form-group">
@@ -134,9 +142,8 @@
             </div>
         </div>
     </div>
-
     {{ request.user.username|json_script:"user_username" }}
-    {{ room_name|json_script:"room-name" }}
+    {{ seconduser|json_script:"room-name" }}
     <script>
         const user_username = JSON.parse(document.getElementById('user_username').textContent);
         document.querySelector('#submit').onclick = function (e) {
@@ -160,7 +167,7 @@
         const chatSocket = new WebSocket(
             'ws://' +
             window.location.host +
-            '/ws/' +
+            '/ws/personal/' +
             roomName +
             '/'
         );

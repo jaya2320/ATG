@@ -62,10 +62,10 @@
           
           .container-darker img {
             float: left;
-            max-width: 60px;
-            width: 100%;
+            
+            width: 200px;
+            height:100px;
             margin-right: 20px;
-            border-radius: 50%;
           }
           
           .container-darker img.right {
@@ -83,6 +83,13 @@
             float: left;
             color: #999;
           }
+          .dropdown-toggle::before {
+            display: none !important;
+        }
+        
+        .dropdown-toggle::after {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -114,15 +121,47 @@
 
                               
                             <div class="container-darker" style="margin-left:230px;">
-                                <b>{{i.sender}}</b><p>{{i.content}}</p>
-                                <span class="time-left">{{i.date}}</span>
+                              <b>{{i.user}}</b>
+                              {% if "data:image/" in i.content %}
+                              <img  src="{{i.content}}" >
+                              {% elif "data:audio/" in i.content %}
+                              
+                              <audio controls preload="none">
+                                <source src="{{i.content}}" type="audio/webm">
+                                
+                                </audio>
+
+                                {% elif "data:video/" in i.content %}
+                                <video width="220" height="120" controls style="margin-left:50px;">
+                                    <source src={{i.content}}>
+                                </video>
+                              {% else %}
+                              <p>{{i.content}}</p>
+                              {% endif %}
+                              <span class="time-left" >{{i.date}}</span>
                                 <span class="time-right"><button style="background-color: rgb(2, 47, 88); border-radius:5px;"><a href="{% url 'deletepersonalmessage' seconduser i.pk %}" style="color:#fff; text-decoration: None;">Delete </a></button></span>
                               </div> 
                             <br>
                               {% else %}
                               <div class="container-darker">
-                                <b>{{i.sender}}</b><p>{{i.content}}</p>
-                                <span class="time-left">{{i.date}}</span>
+                                <b>{{i.user}}</b>
+                                {% if "data:image/" in i.content %}
+                                <img  src="{{i.content}}" >
+                                {% elif "data:audio/" in i.content %}
+                                
+                                <audio controls preload="none">
+                                  <source src="{{i.content}}" type="audio/webm">
+                                  
+                                  </audio>
+  
+                                  {% elif "data:video/" in i.content %}
+                                  <video width="220" height="120" controls style="margin-left:50px;">
+                                      <source src={{i.content}}>
+                                  </video>
+                                {% else %}
+                                <p>{{i.content}}</p>
+                                {% endif %}
+                                <span class="time-left" >{{i.date}}</span>
                                 
                               </div> 
                             <br>
@@ -134,7 +173,31 @@
                         </div>
                     <div class="form-group">
                         <input class="form-control" id="input" type="text">
-                        
+                        <span>
+                          <!---<input type="file" id="docfile" accept="file_extension|audio/*|video/*|image/*|media_type" onchange='sendimage(this)' style="margin-left:545px; margin-top:-30px;"></i>-->
+                          <span class="dropdown">
+                            <span class="dropdown-toggle"  data-toggle="dropdown">
+                                <i class="fa fa-paperclip fa-2x" style="margin-left:-50px; margin-top:-30px;"></i>
+                                
+                            </span>
+                            <div class="dropdown-menu">
+                                <a href="" class="dropdown-item"  >
+                                    Image
+                                    <input type="file" id="docfile" onchange="sendimage(this);" accept="image/*" />
+                                </a>
+                              <!---
+                                <a href="" class="dropdown-item" >
+                                  Audio
+                                  <input type="file" id="docaudiofile" onchange="sendaudio(this);" accept="audio/*"  />
+                              </a>
+                                <a href="" class="dropdown-item">
+                                  Video
+                                  
+                                  <input type="file" id="docvideofile" onchange="sendvideo(this);" accept="video/*"  />
+                                </a>-->
+                            </div>
+                        </span>
+                        </span>
                     </div>
                     
                     <input class="btn btn-secondary btn-lg btn-block" id="submit" type="button" value="Send">
@@ -145,6 +208,42 @@
     {{ request.user.username|json_script:"user_username" }}
     {{ seconduser|json_script:"room-name" }}
     <script>
+
+      function sendimage(event){
+        var file=event.files[0];
+        if (!file.type.match("file_extension|image/*|media_type")){
+          alert("please select image, video, audio file only");
+        }
+        else{
+          var reader=new FileReader();
+        
+          reader.addEventListener("load",function() { 
+
+
+           const user_username = JSON.parse(document.getElementById('user_username').textContent);
+           document.querySelector('#submit').onclick = function (e) {
+           const messageInputDom = document.querySelector('#input');
+           const messageInputDom1 = document.querySelector('#docfile');
+           const message = reader.result
+           
+           chatSocket.send(JSON.stringify({
+               'message': message,
+               'username': user_username,
+              
+               
+           }));
+           messageInputDom.value = '';
+           messageInputDom1.value = '';
+       };
+
+         },false);
+          
+          if (file){
+            reader.readAsDataURL(file);
+          }
+        }
+      }
+
         const user_username = JSON.parse(document.getElementById('user_username').textContent);
         document.querySelector('#submit').onclick = function (e) {
             const messageInputDom = document.querySelector('#input');

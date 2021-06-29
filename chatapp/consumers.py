@@ -7,6 +7,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.template.loader import render_to_string
 
+
 class ChatRoomConsumer(AsyncWebsocketConsumer):
     print("in publicchat---------------------------------------------------------")
     async def connect(self):
@@ -56,6 +57,8 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def save_message(self,username,message):
+        
+
         Messagepublic.objects.create(user=username,content=message)
 
 

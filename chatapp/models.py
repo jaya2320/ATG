@@ -38,7 +38,7 @@ class Message(TrackingModel):
     thread = models.ForeignKey(Thread, on_delete=models.CASCADE)
     sender = models.ForeignKey('auth.User', on_delete=models.CASCADE)
    
-    content = models.TextField(blank=False, null=False)
+    content = models.TextField(blank=True, null=True)
     date=models.DateTimeField(default=datetime.now,blank=True)
     def __str__(self) -> str:
         return f'From <Thread - {self.thread}>'
@@ -52,7 +52,7 @@ class Messagepublic(models.Model):
     content=models.CharField(max_length=10000000,null=True)
     date=models.DateTimeField(default=datetime.now,blank=True)
     user=models.CharField(max_length=1000)
-    #file=models.FileField(upload_to='media',null=True)
+    file=models.FileField(upload_to='multimedia',null=True)
     #room=models.CharField(max_length=500,null=True)
     class Meta:
         ordering=('date',)

@@ -121,7 +121,7 @@
 
                               
                             <div class="container-darker" style="margin-left:230px;">
-                              <b>{{i.user}}</b>
+                              <b>{{i.sender}}</b>
                               {% if "data:image/" in i.content %}
                               <img  src="{{i.content}}" >
                               {% elif "data:audio/" in i.content %}
@@ -144,7 +144,7 @@
                             <br>
                               {% else %}
                               <div class="container-darker">
-                                <b>{{i.user}}</b>
+                                <b>{{i.sender}}</b>
                                 {% if "data:image/" in i.content %}
                                 <img  src="{{i.content}}" >
                                 {% elif "data:audio/" in i.content %}

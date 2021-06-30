@@ -103,13 +103,16 @@
     
             document.querySelector('#room-name-submit').onclick = function(e) {
                 var roomName = document.querySelector('#room-name-input').value;
-                window.location.pathname = '/' + roomName + '/';
+                window.location.pathname = '/' + 'chatroom' + '/';
             };
         </script>
         <div class="menu-container">
             <ul>
                 <li><a href="index" class="active">Home</a></li>
                 <li><a href="chatroom" id="room-name-submit">Chat Room</a></li>
+                <li><a href="creategroup" >Create Group</a></li>
+                <li><a href="joingroup" >Join Group</a></li>
+                <li><a href="notifications" >Notifications ({{ z }})</a></li>
                 <li><a href="logout">Log-Out</a></li>
             </ul>
         </div>

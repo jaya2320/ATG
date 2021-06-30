@@ -1,0 +1,414 @@
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>ChatRoom</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .menu-container ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: rgb(236, 165, 33);
+          }
+          
+          .menu-container li {
+            float: left;
+          }
+          
+          .menu-container li a {
+            display: inline-block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+          }
+          
+          .menu-container li a:hover {
+            background-color: #333;
+          }
+          
+          .menu-container .active {
+            background-color: red;
+          }
+
+          .container-darker {
+            border: 2px solid #dedede;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+          }
+          
+          .container-darker {
+            border-color: #ccc;
+            background-color: #ddd;
+          }
+          
+          .container-darker::after {
+            content: "";
+            clear: both;
+            display: table;
+          }
+
+         
+          
+          .container-darker img {
+            float: left;
+            
+            width: 200px;
+            height:100px;
+            margin-right: 20px;
+            
+          }
+          
+          .container-darker img.right {
+            float: right;
+            margin-left: 20px;
+            margin-right:0;
+          }
+          
+          .time-right {
+            float: right;
+            color: #aaa;
+          }
+          
+         .dropdown-toggle::before {
+            display: none !important;
+        }
+        
+        .dropdown-toggle::after {
+            display: none !important;
+        }
+
+          .time-left {
+            float: left;
+            color: #999;
+          }
+          video {
+            z-index: 1 !important;
+        }
+    </style>
+</head>
+
+<body>
+  {% if messages %}
+        {% for message in messages %}
+        {% if message.tags %}
+        <script>alert("{{ message }}")</script> {% endif %}
+    
+        {% endfor %}
+    
+        {% endif %}
+ 
+    <div class="menu-container">
+        <ul>
+            <li><a href="index1" class="active">Home</a></li>
+            <li><a href="{% url 'leavegroup' room_name %}">Leave Group</a></li>
+            <li><a href="logout1">Log-Out</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="col-6">
+              <div class ="addingmember" style="margin-bottom:-180px;">
+                <label style="margin-left:850px; font-size:20px; font-weight:bolder;">Add a Member</label>
+                <form action="{% url 'addmember' room_name %}" method='POST'>
+                  {% csrf_token %}
+                  <select name="addmember" style="margin-left:850px; padding:10px;">
+                    {% for i in alluser %}
+                    <option value={{i.username}}>{{i.username}}</option>
+                    {% endfor %}
+                  </select>
+                  <button value="submit" style="margin-left:850px; padding:10px; background-color:blue; color:#fff; margin-top:10px;">Add</button>
+                </form>
+              </div>
+                <form enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1" class="h4 pt-5">Chatroom : {{room_name}}</label>
+                        
+                       <div class="box">
+                           <div class="form-control" id="chat-text-area" rows="100" style="height:350px; width:800px; margin-left:-100px;">
+                            {% for i in messages1 %}
+                         
+                            {% if i.user == request.user.username %}
+
+                            
+                          <div class="container-darker"  style="margin-left:230px;">
+                              <b>{{i.user}}</b>
+                              {% if "data:image/" in i.content %}
+                              <img  src="{{i.content}}" >
+                              {% elif "data:audio/" in i.content %}
+                              
+                              <audio controls autoplay>
+                                <source src="{{i.content}}" type="video/webm" />
+                                
+                                </audio>
+
+                                {% elif "data:video/" in i.content %}
+                                <video width="220" height="120" controls style="margin-left:50px;" loop="loop" autoplay="">
+                                    <source src={{i.content}}>
+                                </video>
+                              {% else %}
+                              <p>{{i.content}}</p>
+                              {% endif %}
+                              <span class="time-left" >{{i.date}}</span>
+                              <span class="time-right"><button style="background-color: rgb(2, 47, 88); border-radius:5px;"><a href="{% url 'deletemessage1' room_name i.pk %}" style="color:#fff; text-decoration: None;">Delete </a></button></span>
+                            </div> 
+                          <br>
+                            {% else %}
+                            <div class="container-darker"  >
+                              <b>{{i.user}}</b>
+                              {% if "data:image/" in i.content %}
+                              <img  src="{{i.content}}" >
+                              {% elif "data:audio/" in i.content %}
+                              
+                              <audio controls preload="none">
+                                <source src="{{i.content}}" type="audio/webm">
+                                
+                                </audio>
+
+                                {% elif "data:video/" in i.content %}
+                                <video width="220" height="120" controls style="margin-left:50px;">
+                                    <source src={{i.content}}>
+                                </video>
+                              {% else %}
+                              <p>{{i.content}}</p>
+                              {% endif %}
+                              <span class="time-left" >{{i.date}}</span>
+                              
+                            </div> 
+                            {% endif %}
+                          {% endfor %}
+                        </div> <br>
+                        </div>
+                    <div class="form-group">
+                        <input class="form-control" id="input" type="text">
+                        <span>
+                          <!---<input type="file" id="docfile" accept="file_extension|audio/*|video/*|image/*|media_type" onchange='sendimage(this)' style="margin-left:545px; margin-top:-30px;"></i>-->
+                          <span class="dropdown">
+                            <span class="dropdown-toggle"  data-toggle="dropdown">
+                                <i class="fa fa-paperclip fa-2x" style="margin-left:-50px; margin-top:-30px;"></i>
+                                
+                            </span>
+                            <div class="dropdown-menu">
+                                <a href="" class="dropdown-item"  >
+                                    Image
+                                    <input type="file" id="docfile" onchange="sendimage(this);" accept="image/*" />
+                                </a>
+                              <!---
+                                <a href="" class="dropdown-item" >
+                                  Audio
+                                  <input type="file" id="docaudiofile" onchange="sendaudio(this);" accept="audio/*"  />
+                              </a>
+                                <a href="" class="dropdown-item">
+                                  Video
+                                  
+                                  <input type="file" id="docvideofile" onchange="sendvideo(this);" accept="video/*"  />
+                                </a>-->
+                            </div>
+                        </span>
+                        </span>
+                        
+                    </div>
+                    
+                    <input class="btn btn-secondary btn-lg btn-block" id="submit" type="button" value="Send">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{ request.user.username|json_script:"user_username" }}
+    {{ room_name|json_script:"room-name" }}
+    <script>
+      
+      /*
+      function sendvideo(event){
+        
+        var file=event.files[0];
+    
+        if (!file.type.match("video.*")){
+          alert("please select video file only");
+        }
+        else{
+          var reader=new FileReader();
+          let blob=new Blob([event.data],{type:'video/'});
+          reader.addEventListener("load",function() { 
+
+            
+        
+           const user_username = JSON.parse(document.getElementById('user_username').textContent);
+           document.querySelector('#submit').onclick = function (e) {
+           const messageInputDom = document.querySelector('#input');
+           const messageInputDom1 = document.querySelector('#docvideofile');
+           const message = reader.result
+           console.log(message);
+           
+           chatSocket.send(JSON.stringify({
+               'message': message,
+               'username': user_username,
+               'msgtype':'audio',
+               
+           }));
+           messageInputDom.value = '';
+           messageInputDom1.value = '';
+       };
+
+         },false);
+          
+          
+            reader.readAsDataURL(blob);
+            
+        
+        }
+      }
+
+      function sendaudio(event){
+        
+        var file=event.files[0];
+    
+        if (!file.type.match("audio.*")){
+          alert("please select audio file only");
+        }
+        else{
+          var reader=new FileReader();
+          let blob=new Blob([event.data],{type:'audio/webm'});
+          reader.addEventListener("load",function() { 
+
+            
+        
+           const user_username = JSON.parse(document.getElementById('user_username').textContent);
+           document.querySelector('#submit').onclick = function (e) {
+           const messageInputDom = document.querySelector('#input');
+           const messageInputDom1 = document.querySelector('#docaudiofile');
+           const message = reader.result
+           console.log(message);
+           
+           chatSocket.send(JSON.stringify({
+               'message': message,
+               'username': user_username,
+               
+               
+           }));
+           messageInputDom.value = '';
+           messageInputDom1.value = '';
+       };
+
+         },false);
+          
+      
+            reader.readAsDataURL(blob);
+            
+         
+        }
+      }
+*/
+
+
+       function sendimage(event){
+         var file=event.files[0];
+         if (!file.type.match("file_extension|image/*|media_type")){
+           alert("please select image, video, audio file only");
+         }
+         else{
+           var reader=new FileReader();
+         
+           reader.addEventListener("load",function() { 
+
+
+            const user_username = JSON.parse(document.getElementById('user_username').textContent);
+            document.querySelector('#submit').onclick = function (e) {
+            const messageInputDom = document.querySelector('#input');
+            const messageInputDom1 = document.querySelector('#docfile');
+            const message = reader.result
+            
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'username': user_username,
+               
+                
+            }));
+            messageInputDom.value = '';
+            messageInputDom1.value = '';
+        };
+
+          },false);
+           
+           if (file){
+             reader.readAsDataURL(file);
+           }
+         }
+       }
+
+        const user_username = JSON.parse(document.getElementById('user_username').textContent);
+        document.querySelector('#submit').onclick = function (e) {
+            const messageInputDom = document.querySelector('#input');
+            
+            const message = messageInputDom.value;
+            
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'username': user_username,
+                
+                
+            }));
+            messageInputDom.value = '';
+        };
+
+
+
+
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+        const chatSocket = new WebSocket(
+            'ws://' +
+            window.location.host +
+            '/ws/joingroup/' +
+            roomName +
+            '/'
+        );
+
+        chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            console.log(data)
+            console.log(message.src)
+            
+            msg=data.message;
+            
+                
+            if(data.message){
+            document.querySelector('#chat-text').value += (data.username + ': ' + msg + '\n');
+           
+            } 
+            
+            else{
+                alert('The message is empty');
+            }
+        
+        }
+    </script>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
+    </script>
+</body>
+
+</html>
